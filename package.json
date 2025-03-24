@@ -1,0 +1,28 @@
+{
+  "name": "Natours-Backend",
+  "version": "1.0.0",
+  "description": "Implementing a backend using Node Express and MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch app.js"
+  },
+  "keywords": [
+    "Node",
+    "Express",
+    "MongoDB"
+  ],
+  "author": "crotch-watch",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.5",
+  "dependencies": {
+    "express": "4"
+  },
+  "devDependencies": {
+    "@eslint/js": "~9.23.0",
+    "@types/express": "~5.0.1",
+    "@types/node": "~22.13.12",
+    "eslint": "~9.23.0",
+    "globals": "~16.0.0"
+  }
+}
