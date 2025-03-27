@@ -15,7 +15,27 @@ app.get(TOURS, (req, res) => {
   res.status(200).json({
     status: 'success',
     results: toursData.length,
-    data: { tours: toursData },
+    data: { tours: toursData }
+  })
+})
+
+app.get(TOURS + '/:id', (req, res) => {
+  const id = +req.params.id
+
+  if (id > toursData.length) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'No ID found.'
+    })
+  }
+
+  const reqTour = toursData.find((tour) => tour.id === id)
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: reqTour
+    }
   })
 })
 
@@ -31,9 +51,34 @@ app.post(TOURS, (req, res) => {
       res.status(201).json({
         status: 'success',
         data: {
-          tour: newTour,
-        },
+          tour: newTour
+        }
       })
+  })
+})
+
+app.patch(TOURS + '/:id', (req, res) => {
+  const id = +req.params.id
+  const { body } = req
+
+  if (id > toursData.length) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'No ID found.'
+    })
+  }
+
+  const updateTour = toursData.find((tour) => tour.id === id)
+
+  Object.entries(body).forEach(([key, value]) => {
+    updateTour[key] = value
+  })
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: updateTour
+    }
   })
 })
 
