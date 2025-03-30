@@ -11,15 +11,15 @@ const PORT = 3000
 const app = express()
 app.use(express.json())
 
-app.get(TOURS, (req, res) => {
+const getTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: toursData.length,
     data: { tours: toursData }
   })
-})
+}
 
-app.get(TOURS + '/:id', (req, res) => {
+const getTour = (req, res) => {
   const id = +req.params.id
 
   if (id > toursData.length) {
@@ -37,9 +37,9 @@ app.get(TOURS + '/:id', (req, res) => {
       tour: reqTour
     }
   })
-})
+}
 
-app.post(TOURS, (req, res) => {
+const addTour = (req, res) => {
   const { id: lastTourId } = toursData[toursData.length - 1]
   const newTour = { id: lastTourId + 1, ...req.body }
   toursData.push(newTour)
@@ -55,9 +55,9 @@ app.post(TOURS, (req, res) => {
         }
       })
   })
-})
+}
 
-app.patch(TOURS + '/:id', (req, res) => {
+const updateTour = (req, res) => {
   const id = +req.params.id
   const { body } = req
 
@@ -80,10 +80,9 @@ app.patch(TOURS + '/:id', (req, res) => {
       tour: updateTour
     }
   })
-})
+}
 
-// simple implementation of DELETE
-app.delete(TOURS + '/:id', (req, res) => {
+const deleteTour = (req, res) => {
   const id = +req.params.id
 
   if (id > toursData.length) {
@@ -97,7 +96,10 @@ app.delete(TOURS + '/:id', (req, res) => {
     status: 'success',
     data: null
   })
-})
+}
+
+app.route(TOURS).get(getTours).post(addTour)
+app.route(TOURS + '/:id').get(getTour).patch(updateTour).delete(deleteTour)
 
 app.listen(PORT, (startupError) => {
   if (startupError) console.log('Error starting server :', startupError)
