@@ -82,6 +82,23 @@ app.patch(TOURS + '/:id', (req, res) => {
   })
 })
 
+// simple implementation of DELETE
+app.delete(TOURS + '/:id', (req, res) => {
+  const id = +req.params.id
+
+  if (id > toursData.length) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'No ID found.'
+    })
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  })
+})
+
 app.listen(PORT, (startupError) => {
   if (startupError) console.log('Error starting server :', startupError)
   else console.log('Listening on port ', PORT)
