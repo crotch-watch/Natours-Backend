@@ -1,6 +1,7 @@
 const fs = require('node:fs')
 
 const express = require('express')
+const morgan = require('morgan')
 
 const TOURS_PATH = `./dev-data/data/tours-simple.json`
 const toursData = JSON.parse(fs.readFileSync(TOURS_PATH).toString())
@@ -9,7 +10,9 @@ const TOURS = '/api/v1/tours'
 const app = express()
 
 // middlewares
+
 app.use(express.json())
+app.use(morgan("dev"))
 
 // middleware is exec in order of declaration
 app.use((req, res, next) => {
@@ -40,7 +43,7 @@ const getTour = (req, res) => {
   const reqTour = toursData.find((tour) => tour.id === id)
 
   res.status(200).json({
-    requestedAt: req.reqestedAt.toISOString(),
+    requestedAt: req.reqestedAt,
     status: 'success',
     data: {
       tour: reqTour
