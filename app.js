@@ -6,11 +6,19 @@ const TOURS_PATH = `./dev-data/data/tours-simple.json`
 const toursData = JSON.parse(fs.readFileSync(TOURS_PATH).toString())
 const TOURS = '/api/v1/tours'
 
-const PORT = 3000
-
 const app = express()
+
+// middlewares
 app.use(express.json())
 
+// middleware is exec in order of declaration
+app.use((req, res, next) => {
+ req.reqestedAt = new Date().toISOString()
+  // next invocation is required to advance the exec
+  next()
+})
+
+// handlers
 const getTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -32,6 +40,7 @@ const getTour = (req, res) => {
   const reqTour = toursData.find((tour) => tour.id === id)
 
   res.status(200).json({
+    requestedAt: req.reqestedAt.toISOString(),
     status: 'success',
     data: {
       tour: reqTour
@@ -98,9 +107,21 @@ const deleteTour = (req, res) => {
   })
 }
 
+// routes
 app.route(TOURS).get(getTours).post(addTour)
+
+// // sequential middleware exec demo
+app.use((res, req, next) => {
+  // since middleware are invoked sequentially if tours don't have an id
+  // then this middleware won't have any effect
+  res.requiresId = true
+ next()
+})
+
 app.route(TOURS + '/:id').get(getTour).patch(updateTour).delete(deleteTour)
 
+// server config and init.
+const PORT = 3000
 app.listen(PORT, (startupError) => {
   if (startupError) console.log('Error starting server :', startupError)
   else console.log('Listening on port ', PORT)
