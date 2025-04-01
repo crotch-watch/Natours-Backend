@@ -7,16 +7,17 @@ const TOURS_PATH = `./dev-data/data/tours-simple.json`
 const toursData = JSON.parse(fs.readFileSync(TOURS_PATH).toString())
 const TOURS = '/api/v1/tours'
 
+const USERS = '/api/v1/users'
+
 const app = express()
 
 // middlewares
-
 app.use(express.json())
-app.use(morgan("dev"))
+app.use(morgan('dev'))
 
 // middleware is exec in order of declaration
 app.use((req, res, next) => {
- req.reqestedAt = new Date().toISOString()
+  req.reqestedAt = new Date().toISOString()
   // next invocation is required to advance the exec
   next()
 })
@@ -26,7 +27,7 @@ const getTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: toursData.length,
-    data: { tours: toursData }
+    data: { tours: toursData },
   })
 }
 
@@ -36,7 +37,7 @@ const getTour = (req, res) => {
   if (id > toursData.length) {
     return res.status(404).json({
       status: 'error',
-      message: 'No ID found.'
+      message: 'No ID found.',
     })
   }
 
@@ -46,8 +47,8 @@ const getTour = (req, res) => {
     requestedAt: req.reqestedAt,
     status: 'success',
     data: {
-      tour: reqTour
-    }
+      tour: reqTour,
+    },
   })
 }
 
@@ -63,8 +64,8 @@ const addTour = (req, res) => {
       res.status(201).json({
         status: 'success',
         data: {
-          tour: newTour
-        }
+          tour: newTour,
+        },
       })
   })
 }
@@ -76,7 +77,7 @@ const updateTour = (req, res) => {
   if (id > toursData.length) {
     return res.status(404).json({
       status: 'error',
-      message: 'No ID found.'
+      message: 'No ID found.',
     })
   }
 
@@ -89,8 +90,8 @@ const updateTour = (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
-      tour: updateTour
-    }
+      tour: updateTour,
+    },
   })
 }
 
@@ -100,17 +101,30 @@ const deleteTour = (req, res) => {
   if (id > toursData.length) {
     return res.status(404).json({
       status: 'error',
-      message: 'No ID found.'
+      message: 'No ID found.',
     })
   }
 
   res.status(204).json({
     status: 'success',
-    data: null
+    data: null,
   })
 }
 
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'route not found',
+  })
+}
+
+let createUser = getAllUsers,
+  updateUser = getAllUsers,
+  getUser = getAllUsers,
+  deleteUser = getAllUsers
+
 // routes
+// tours@start
 app.route(TOURS).get(getTours).post(addTour)
 
 // // sequential middleware exec demo
@@ -118,10 +132,24 @@ app.use((res, req, next) => {
   // since middleware are invoked sequentially if tours don't have an id
   // then this middleware won't have any effect
   res.requiresId = true
- next()
+  next()
 })
 
-app.route(TOURS + '/:id').get(getTour).patch(updateTour).delete(deleteTour)
+app
+  .route(TOURS + '/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour)
+// tours@end
+
+// app@start
+app.route(USERS).get(getAllUsers).post(createUser)
+app
+  .route(USERS + '/:id')
+  .get(getUser)
+  .delete(deleteUser)
+  .patch(updateUser)
+// app@end
 
 // server config and init.
 const PORT = 3000
