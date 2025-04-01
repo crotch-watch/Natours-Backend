@@ -9,6 +9,8 @@ const TOURS = '/api/v1/tours'
 
 const USERS = '/api/v1/users'
 
+const INTERNAL_SERVER_ERROR = 500
+
 const app = express()
 
 // middlewares
@@ -112,7 +114,7 @@ const deleteTour = (req, res) => {
 }
 
 const getAllUsers = (req, res) => {
-  res.status(500).json({
+  res.status(INTERNAL_SERVER_ERROR).json({
     status: 'error',
     message: 'route not found',
   })
@@ -123,9 +125,15 @@ let createUser = getAllUsers,
   getUser = getAllUsers,
   deleteUser = getAllUsers
 
+// Routers
+const tourRouter = express.Router()
+const userRouter = express.Router()
+
+app.use(TOURS, tourRouter).use(USERS, userRouter)
+
 // routes
 // tours@start
-app.route(TOURS).get(getTours).post(addTour)
+tourRouter.route('/').get(getTours).post(addTour)
 
 // // sequential middleware exec demo
 app.use((res, req, next) => {
@@ -135,21 +143,13 @@ app.use((res, req, next) => {
   next()
 })
 
-app
-  .route(TOURS + '/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour)
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour)
 // tours@end
 
-// app@start
-app.route(USERS).get(getAllUsers).post(createUser)
-app
-  .route(USERS + '/:id')
-  .get(getUser)
-  .delete(deleteUser)
-  .patch(updateUser)
-// app@end
+// user@start
+userRouter.route('/').get(getAllUsers).post(createUser)
+userRouter.route('/:id').get(getUser).delete(deleteUser).patch(updateUser)
+// user@end
 
 // server config and init.
 const PORT = 3000
