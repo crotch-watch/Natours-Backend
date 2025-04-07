@@ -1,6 +1,16 @@
-const fs = require("node:fs")
+const fs = require('node:fs')
 
-const { toursData, TOURS_PATH } = require("../constants")
+const { toursData, TOURS_PATH } = require('../constants')
+
+exports.checkId = (req, res, next, id) => {
+ if(+id > toursData.length) {
+  return res.status(400).send({
+    status: 'error',
+    message: 'Invalid ID'
+  })
+ }
+ next()
+}
 
 exports.getTours = (req, res) => {
   res.status(200).json({
@@ -11,16 +21,8 @@ exports.getTours = (req, res) => {
 }
 
 exports.getTour = (req, res) => {
-  const id = +req.params.id
-
-  if (id > toursData.length) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'No ID found.',
-    })
-  }
-
-  const reqTour = toursData.find((tour) => tour.id === id)
+  const { id } = req.params
+  const reqTour = toursData.find((tour) => tour.id === +id)
 
   res.status(200).json({
     requestedAt: req.reqestedAt,
@@ -50,17 +52,12 @@ exports.addTour = (req, res) => {
 }
 
 exports.updateTour = (req, res) => {
-  const id = +req.params.id
-  const { body } = req
+  const {
+    body,
+    params: { id },
+  } = req
 
-  if (id > toursData.length) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'No ID found.',
-    })
-  }
-
-  const updateTour = toursData.find((tour) => tour.id === id)
+  const updateTour = toursData.find((tour) => tour.id === +id)
 
   Object.entries(body).forEach(([key, value]) => {
     updateTour[key] = value
@@ -75,15 +72,6 @@ exports.updateTour = (req, res) => {
 }
 
 exports.deleteTour = (req, res) => {
-  const id = +req.params.id
-
-  if (id > toursData.length) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'No ID found.',
-    })
-  }
-
   res.status(204).json({
     status: 'success',
     data: null,
