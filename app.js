@@ -11,6 +11,7 @@ const app = express()
 // middlewares
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(express.static('public/'))
 
 // middleware is exec in order of declaration
 app.use((req, res, next) => {
