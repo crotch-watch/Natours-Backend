@@ -3,13 +3,13 @@ const fs = require('node:fs')
 const { toursData, TOURS_PATH } = require('../constants')
 
 exports.checkId = (req, res, next, id) => {
- if(+id > toursData.length) {
-  return res.status(400).send({
-    status: 'error',
-    message: 'Invalid ID'
-  })
- }
- next()
+  if (+id > toursData.length) {
+    return res.status(400).send({
+      status: 'error',
+      message: 'Invalid ID',
+    })
+  }
+  next()
 }
 
 exports.getTours = (req, res) => {
@@ -76,4 +76,10 @@ exports.deleteTour = (req, res) => {
     status: 'success',
     data: null,
   })
+}
+
+exports.checkBody = (req, res, next) => {
+  const { name, price } = req.body
+  if (!name || !price) res.status(404).send('Missing name or price')
+  else next()
 }
