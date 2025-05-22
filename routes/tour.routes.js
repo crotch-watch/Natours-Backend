@@ -6,13 +6,13 @@ const {
   addTour,
   updateTour,
   deleteTour,
-  checkBody,
+  createTour,
 } = require('../controllers/tour.controller')
 
 const tourRouter = express.Router()
 
 // tourRouter.param('id', checkId)
-tourRouter.route('/').get(getTours).post(checkBody, addTour)
+tourRouter.route('/').get(getTours).post(createTour, addTour)
 
 tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour)
 
