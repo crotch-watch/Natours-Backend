@@ -10,12 +10,31 @@ exports.checkId = (req, res, next, id) => {
   next()
 }
 
-exports.getTours = (req, res) => {
+exports.createTour = async (req, res) => {
+  try {
+    const tour = await Tour.create(req.body)
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: tour,
+      },
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 'error',
+      message: error,
+    })
+  }
+}
+
+exports.getTours = (req, res, next) => {
   res.status(200).json({
     status: 'success',
     // results: toursData.length,
     // data: { tours: toursData },
   })
+  next()
 }
 
 exports.getTour = (req, res) => {
@@ -36,7 +55,6 @@ exports.addTour = (req, res) => {
   // const newTour = { id: lastTourId + 1, ...req.body }
   // toursData.push(newTour)
   // const newToursJson = JSON.stringify(toursData)
-
   // fs.writeFile(TOURS_PATH, newToursJson, (fileWriteError) => {
   //   if (fileWriteError) console.log(fileWriteError)
   //   else
