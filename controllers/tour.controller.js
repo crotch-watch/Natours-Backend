@@ -28,26 +28,41 @@ exports.createTour = async (req, res) => {
   }
 }
 
-exports.getTours = (req, res, next) => {
-  res.status(200).json({
-    status: 'success',
-    // results: toursData.length,
-    // data: { tours: toursData },
-  })
-  next()
+exports.getTours = async (req, res, next) => {
+  try {
+    const tours = await Tour.find()
+
+    res.status(200).json({
+      status: 'success',
+      data: tours,
+      results: tours.length,
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 'error',
+      message: error,
+    })
+  } finally {
+    next()
+  }
 }
 
-exports.getTour = (req, res) => {
+exports.getTour = async (req, res) => {
   const { id } = req.params
-  // const reqTour = toursData.find((tour) => tour.id === +id)
 
-  res.status(200).json({
-    requestedAt: req.reqestedAt,
-    status: 'success',
-    data: {
-      // tour: reqTour,
-    },
-  })
+  try {
+    const tour = await Tour.findById(id)
+
+    res.status(200).json({
+      status: 'success',
+      data: tour,
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 'error',
+      message: error,
+    })
+  }
 }
 
 exports.addTour = (req, res) => {
@@ -67,24 +82,28 @@ exports.addTour = (req, res) => {
   // })
 }
 
-exports.updateTour = (req, res) => {
+exports.updateTour = async (req, res) => {
   const {
     body,
     params: { id },
   } = req
 
-  // const updateTour = toursData.find((tour) => tour.id === +id)
+  try {
+    const updatedTour = await Tour.findByIdAndUpdate(id, body, {
+      new: true,
+      runValidators: true,
+    })
 
-  // Object.entries(body).forEach(([key, value]) => {
-  //   updateTour[key] = value
-  // })
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      // tour: updateTour,
-    },
-  })
+    res.status(200).json({
+      status: 'success',
+      data: updatedTour,
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: 'error',
+      message: error,
+    })
+  }
 }
 
 exports.deleteTour = (req, res) => {
