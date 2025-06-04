@@ -1,29 +1,23 @@
 const Tour = require('../models/tour.model')
 
-exports.checkId = (req, res, next, id) => {
-  // if (+id > toursData.length) {
-  //   return res.status(400).send({
-  //     status: 'error',
-  //     message: 'Invalid ID',
-  //   })
-  // }
-  next()
-}
+const {
+  STATUS: { OK, CREATED, NO_CONTENT, BAD_REQUEST }
+} = require('../constants.js')
 
 exports.createTour = async (req, res) => {
   try {
     const tour = await Tour.create(req.body)
 
-    res.status(201).json({
+    res.status(CREATED).json({
       status: 'success',
       data: {
-        tour: tour,
-      },
+        tour: tour
+      }
     })
   } catch (error) {
-    res.status(400).json({
+    res.status(BAD_REQUEST).json({
       status: 'error',
-      message: error,
+      message: error
     })
   }
 }
@@ -32,15 +26,15 @@ exports.getTours = async (req, res, next) => {
   try {
     const tours = await Tour.find()
 
-    res.status(200).json({
+    res.status(OK).json({
       status: 'success',
       data: tours,
-      results: tours.length,
+      results: tours.length
     })
   } catch (error) {
-    res.status(400).json({
+    res.status(BAD_REQUEST).json({
       status: 'error',
-      message: error,
+      message: error
     })
   } finally {
     next()
@@ -53,68 +47,52 @@ exports.getTour = async (req, res) => {
   try {
     const tour = await Tour.findById(id)
 
-    res.status(200).json({
+    res.status(OK).json({
       status: 'success',
-      data: tour,
+      data: tour
     })
   } catch (error) {
-    res.status(400).json({
+    res.status(BAD_REQUEST).json({
       status: 'error',
-      message: error,
+      message: error
     })
   }
 }
 
-exports.addTour = (req, res) => {
-  // const { id: lastTourId } = toursData[toursData.length - 1]
-  // const newTour = { id: lastTourId + 1, ...req.body }
-  // toursData.push(newTour)
-  // const newToursJson = JSON.stringify(toursData)
-  // fs.writeFile(TOURS_PATH, newToursJson, (fileWriteError) => {
-  //   if (fileWriteError) console.log(fileWriteError)
-  //   else
-  //     res.status(201).json({
-  //       status: 'success',
-  //       data: {
-  //         tour: newTour,
-  //       },
-  //     })
-  // })
-}
+/**
+ *  @todo tours is searched against req.id and whatever is passed in body is updated
+ *    only if the values or format is valid since they'll be validated runValidators: true
+ *    NOTE: this update is of type PATCH resource will only be modified
+ *    if PUT method were used it'd replace entire underlying tour or resource.
+ * */
 
 exports.updateTour = async (req, res) => {
   const {
     body,
-    params: { id },
+    params: { id }
   } = req
 
   try {
     const updatedTour = await Tour.findByIdAndUpdate(id, body, {
       new: true,
-      runValidators: true,
+      runValidators: true
     })
 
-    res.status(200).json({
+    res.status(OK).json({
       status: 'success',
-      data: updatedTour,
+      data: updatedTour
     })
   } catch (error) {
-    res.status(400).json({
+    res.status(BAD_REQUEST).json({
       status: 'error',
-      message: error,
+      message: error
     })
   }
 }
 
 exports.deleteTour = (req, res) => {
-  res.status(204).json({
+  res.status(NO_CONTENT).json({
     status: 'success',
-    data: null,
+    data: null
   })
-}
-
-exports.checkBody = (req, res, next) => {
-  const { name, price } = req.body
-  if (!name || !price) res.status(404).send('Missing name or price')
-  else next()
 }
