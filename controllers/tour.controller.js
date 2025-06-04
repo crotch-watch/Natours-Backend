@@ -90,9 +90,31 @@ exports.updateTour = async (req, res) => {
   }
 }
 
-exports.deleteTour = (req, res) => {
-  res.status(NO_CONTENT).json({
-    status: 'success',
-    data: null
-  })
+exports.deleteTour = async (req, res) => {
+  const { id } = req.params
+
+  /** @todo there could be 2 approaches
+   *    1.
+   *      checking for id for validations before passing it into query
+   *      there could be a lot of data and some complex validations let's assume my data has 10 fields
+   *      and there validations require complex analysis so some simple validations ex. is non nullish
+   *      might be beneficial.
+   *    2.
+   *      mongoose handles validation itself so it could be left as well.
+   *    NOTE: since validations validators would be assumably optimized they'll handle it better.
+   */
+
+  try {
+    await Tour.findByIdAndDelete(id)
+
+    res.status(NO_CONTENT).json({
+      status: 'success',
+      data: null
+    })
+  } catch (error) {
+    res.status(BAD_REQUEST).json({
+      status: 'error',
+      message: error.message
+    })
+  }
 }
