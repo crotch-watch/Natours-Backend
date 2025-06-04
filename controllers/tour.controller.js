@@ -22,7 +22,7 @@ exports.createTour = async (req, res) => {
   }
 }
 
-exports.getTours = async (req, res, next) => {
+exports.getTours = async (_req, res, next) => {
   try {
     const tours = await Tour.find()
 
